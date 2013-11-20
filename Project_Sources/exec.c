@@ -18,7 +18,7 @@ void exec_init() {
 	cont_init();
 	ui_init();
 	mot_init();
-	//comms_init();	
+	comms_init();	
 	
 	// disable interrupt
 	disable_irq(EXEC_PIT_IRQ_NUM);

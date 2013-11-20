@@ -22,6 +22,7 @@
 #include "cont.h"
 #include "comms.h"
 #include "ui.h"
+#include "uart.h"
 
 // general
 #define BIT(var, pos) 		(((var) & (1<<(pos))) >> pos)
