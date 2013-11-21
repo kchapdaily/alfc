@@ -12,14 +12,17 @@ void comms_init(){
 	//call this before the UART can be used
 	
 	// enable the clock for Port C
-	SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK;
+	SIM_SCGC5 |= SIM_SCGC5_PORTE_MASK;
 	
 	//setting up UART RX and TX pins
 	PORTE_PCR9 = (0|PORT_PCR_MUX(3)); //sets up receive for UART 5 B77
+	GPIOE_PDDR &= ~GPIO_PDDR_PDD(GPIO_PIN(9)); //set up pin 9 as an input (0)
 	PORTE_PCR8 = (0|PORT_PCR_MUX(3)); //sets up transmit for UART 5 B76
+	GPIOE_PDDR |= GPIO_PDDR_PDD(GPIO_PIN(8)); //set up pin 8 as an output (1)
+
 			
 	//initialize UART
-	uart_init(UART5_BASE_PTR, 50000, 9600);
+	uart_init(UART5_BASE_PTR, 50000, 115200);
 	
 	comms_flag = EXEC_FLAG_DOWN;
 }
@@ -28,21 +31,20 @@ void comms_send()
 {
 	//send one round of frame data
 		
-	uart_putchar(UART5_BASE_PTR, (char)midpoint);
-	printf("midpoint is %d\n", (char)midpoint);
+	//uart_putchar(UART5_BASE_PTR, (char)midpoint);
+	uart_putchar(UART5_BASE_PTR, 'a');
 
-	uart_putchar(UART5_BASE_PTR, (char)adjustment);
-	printf("adjustment is %d\n", (char)adjustment);
+	//uart_putchar(UART5_BASE_PTR, (char)adjustment);
+	uart_putchar(UART5_BASE_PTR, 'b');
 			
-	uart_putchar(UART5_BASE_PTR, (char)serv_angle);
-	printf("servo angle is %d\n", (char)serv_angle);
+	//uart_putchar(UART5_BASE_PTR, (char)serv_angle);
+	uart_putchar(UART5_BASE_PTR, 'c');
 
-	uart_putchar(UART5_BASE_PTR, (char)mot_speedA);
-	printf("mot speed A is %d\n", (char)mot_speedA);
+	//uart_putchar(UART5_BASE_PTR, (char)mot_speedA);
+	uart_putchar(UART5_BASE_PTR, 'd');
 
-	uart_putchar(UART5_BASE_PTR, (char)mot_speedB);
-	printf("mot speed B is %d\n", (char)mot_speedB);
-
+	//uart_putchar(UART5_BASE_PTR, (char)mot_speedB);
+	uart_putchar(UART5_BASE_PTR, 'e');
 }
 
 void comms_receive()
@@ -72,13 +74,13 @@ void comms_receive()
 	static float speed = 0; //except this one
 	
 	
-	printf("entered comms_receive\n");
+	//printf("entered comms_receive\n");
 	//printf("status reg 2 contents: 0x%x\n", UART_S2_REG(UART5_BASE_PTR));
 	
 
 	//wait for the UART to receive something, get the value, and write it to the input var
 	input = uart_getchar(UART5_BASE_PTR);
-	printf("UART received 0x%x\n", input);
+	printf("UART received %i\n", input);
 	
 	if (dataNext == 0)
 	{
@@ -175,7 +177,7 @@ void comms_receive()
 		dataSelect = 0;
 	}	
 	
-	printf("leaving comms_receive\n");
+	//printf("leaving comms_receive\n");
 }
 
 

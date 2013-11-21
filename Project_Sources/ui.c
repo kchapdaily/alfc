@@ -73,6 +73,7 @@ void ui_isr() {
 	    }
 		lcd_update();
 		exec_update();
+		comms_send();
 	}
 
 	// if the “Next” button was pressed, update the current menu item
