@@ -11,8 +11,8 @@ int main (void)
 {
 	exec_init();
 	//exec_run();
-	comms_send();
-	printf("sent stuff in main loop\n");
+	//comms_send();
+	//printf("sent stuff in main loop\n");
 	while (1)
 	{
 		comms_receive();

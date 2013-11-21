@@ -17,6 +17,7 @@ void comms_init(){
 	//setting up UART RX and TX pins
 	PORTE_PCR9 = (0|PORT_PCR_MUX(3)); //sets up receive for UART 5 B77
 	GPIOE_PDDR &= ~GPIO_PDDR_PDD(GPIO_PIN(9)); //set up pin 9 as an input (0)
+	
 	PORTE_PCR8 = (0|PORT_PCR_MUX(3)); //sets up transmit for UART 5 B76
 	GPIOE_PDDR |= GPIO_PDDR_PDD(GPIO_PIN(8)); //set up pin 8 as an output (1)
 
@@ -37,13 +38,13 @@ void comms_send()
 	//uart_putchar(UART5_BASE_PTR, (char)adjustment);
 	uart_putchar(UART5_BASE_PTR, 'b');
 			
-	//uart_putchar(UART5_BASE_PTR, (char)serv_angle);
-	uart_putchar(UART5_BASE_PTR, 'c');
+	uart_putchar(UART5_BASE_PTR, (char)serv_angle);
+	//uart_putchar(UART5_BASE_PTR, 'c');
 
-	//uart_putchar(UART5_BASE_PTR, (char)mot_speedA);
+	//uart_putchar(UART5_BASE_PTR, (char)mot_motorSpeedA);
 	uart_putchar(UART5_BASE_PTR, 'd');
 
-	//uart_putchar(UART5_BASE_PTR, (char)mot_speedB);
+	//uart_putchar(UART5_BASE_PTR, (char)mot_motorSpeedB);
 	uart_putchar(UART5_BASE_PTR, 'e');
 }
 
@@ -70,17 +71,12 @@ void comms_receive()
 	static char go = 0;
 	
 	char input = 0;
-	char oldInput = 1;
 	
 	static float speed = 0; //except this one
 	
-	
-	//printf("entered comms_receive\n");
-	//printf("status reg 2 contents: 0x%x\n", UART_S2_REG(UART5_BASE_PTR));
-	
 	input = uart_getchar(UART5_BASE_PTR);
 	
-		printf("UART received %i\n", input);
+		printf("UART received\n %d\n", input);
 		
 		if (dataNext == 0)
 		{
@@ -176,9 +172,6 @@ void comms_receive()
 			dataNext = 0;
 			dataSelect = 0;
 		}	
-	
-	//printf("leaving comms_receive\n");
-	oldInput = input;
 }
 
 

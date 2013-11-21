@@ -88,6 +88,7 @@ void uart_init (UART_MemMapPtr uartch, int sysclk, int baud)
  */
 char uart_getchar (UART_MemMapPtr channel)
 {
+	printf("waiting for char...\n");
     /* Wait until character has been received */
     while (!(UART_S1_REG(channel) & UART_S1_RDRF_MASK));
     
