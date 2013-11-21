@@ -41,137 +41,101 @@ void comms_send()
 	uart_putchar(UART5_BASE_PTR, (char)serv_angle);
 	//uart_putchar(UART5_BASE_PTR, 'c');
 
-	//uart_putchar(UART5_BASE_PTR, (char)mot_motorSpeedA);
-	uart_putchar(UART5_BASE_PTR, 'd');
+	uart_putchar(UART5_BASE_PTR, (char)mot_motorSpeedA2);
+	//uart_putchar(UART5_BASE_PTR, 'd');
 
-	//uart_putchar(UART5_BASE_PTR, (char)mot_motorSpeedB);
-	uart_putchar(UART5_BASE_PTR, 'e');
+	uart_putchar(UART5_BASE_PTR, (char)mot_motorSpeedBb);
+	//uart_putchar(UART5_BASE_PTR, 'e');
 }
 
 void comms_receive()
 {
-	//receives data on ? interrupt, handles accordingly, and makes necessary adjustments
 	/*	possible input values are as follows:
 	 * 	left, right, go, and speed.
 	 * 	
 	 * 	a select byte will be sent previous to a data byte. the select byte will be as follows:
 	 * 	
-	 * 	[00000001] : left
-	 * 	[00000010] : right
-	 * 	[00000011] : go
-	 * 	[00000100] : speed
+	 * 	1 : left
+	 * 	2 : right
+	 * 	3 : go
+	 * 	4 : speed
+	 * 	
 	 */
 	
-	static uint8 dataSelect = 0; //represents what the next piece of data is going to be
-	static uint8 dataNext = 0; //if this var is high, there is data to be processed
+	char dataSelect = 'n';
+	char dataInput = 'n';
 	
-	//these vars will be toggled on input
 	static char left = 0;
 	static char right = 0;
 	static char go = 0;
+	static float speed = 0;
 	
-	char input = 0;
 	
-	static float speed = 0; //except this one
+	dataSelect = (char)uart_getchar(UART5_BASE_PTR);
+	dataInput = (char)uart_getchar(UART5_BASE_PTR);
 	
-	input = uart_getchar(UART5_BASE_PTR);
+	printf("data select: %d\n", dataSelect);
+	printf("data input: %d\n", dataInput);
 	
-		printf("UART received\n %d\n", input);
-		
-		if (dataNext == 0)
+	if (dataSelect == 1)
+	{
+		left = (left == 1)?0:1;
+		if (left == 1)
 		{
-			if (input == 1)
-			{
-				//next byte is left command
-				dataSelect = 1;
-				dataNext = 1;
-			}
-			
-			if (input == 2)
-			{
-				//next byte is right command
-				dataSelect = 2;
-				dataNext = 1;
-			}
-			
-			if (input == 3)
-			{
-				//next byte is go command
-				dataSelect = 3;
-				dataNext = 1;		
-			}
-			
-			if (input == 3)
-			{
-				//next byte is speed command
-				dataSelect = 4;
-				dataNext = 1;				
-			}
+			serv_angle = 0;
+		}
+		else
+		{
+			serv_angle = 1031;
+		}
+		serv_update();
+	}
+	
+	if (dataSelect == 2)
+	{
+		
+		right = (right == 1)?0:1;
+		
+		if (right == 1)
+		{
+			serv_angle = 2062;
+		}
+		else
+		{
+			serv_angle = 1031;
 		}
 		
-		if (dataNext == 1)
+		serv_update();
+	}
+			
+		
+	if (dataSelect == 3){
+		go = !go;
+		
+	}
+	
+	if (dataSelect == 4){
+		speed = (float)dataInput;
+		
+		if (go == 1)
 		{
-			if (dataSelect == 1)
-			{
-				left = !left;
-				if (left == 1)
-				{
-					serv_angle = 0;
-				}
-				else
-				{
-					serv_angle = 1031;
-				}
-				serv_update();
-			}
+			mot_motorSpeedA1 = 0000;
+			mot_motorSpeedA2 = (int)(speed*2000);
+		
+			mot_motorSpeedB1 = 0000;
+			mot_motorSpeedB2 = (int)(speed*2000);
+		}
+		else
+		{
+			mot_motorSpeedA1 = 0000;
+			mot_motorSpeedA2 = 0000;
 			
-			if (dataSelect == 2)
-			{
-				right = !right;
-				if (right == 1)
-				{
-					serv_angle = 2062;
-				}
-				else
-				{
-					serv_angle = 1031;
-				}
-				
-				serv_update();
-				
-			}
-			
-			if (dataSelect == 3){
-				go = !go;
-				
-			}
-			
-			if (dataSelect == 4){
-				speed = (float)input;
-				
-				if (go == 1)
-				{
-					mot_motorSpeedA1 = 0000;
-					mot_motorSpeedA2 = (int)(speed*2000);
-				
-					mot_motorSpeedB1 = 0000;
-					mot_motorSpeedB2 = (int)(speed*2000);
-				}
-				else
-				{
-					mot_motorSpeedA1 = 0000;
-					mot_motorSpeedA2 = 0000;
-					
-					mot_motorSpeedB1 = 0000;
-					mot_motorSpeedB2 = 0000;
-				}
-				
-				mot_update();
-			}
-			
-			dataNext = 0;
-			dataSelect = 0;
-		}	
+			mot_motorSpeedB1 = 0000;
+			mot_motorSpeedB2 = 0000;
+		}
+		
+		mot_update();
+	}
 }
 
 
