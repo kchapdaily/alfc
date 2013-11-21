@@ -69,7 +69,8 @@ void comms_receive()
 	static char right = 0;
 	static char go = 0;
 	
-	static char input = 0;
+	char input = 0;
+	char oldInput = 1;
 	
 	static float speed = 0; //except this one
 	
@@ -77,107 +78,107 @@ void comms_receive()
 	//printf("entered comms_receive\n");
 	//printf("status reg 2 contents: 0x%x\n", UART_S2_REG(UART5_BASE_PTR));
 	
-
-	//wait for the UART to receive something, get the value, and write it to the input var
 	input = uart_getchar(UART5_BASE_PTR);
-	printf("UART received %i\n", input);
 	
-	if (dataNext == 0)
-	{
-		if (input == 1)
-		{
-			//next byte is left command
-			dataSelect = 1;
-			dataNext = 1;
-		}
+		printf("UART received %i\n", input);
 		
-		if (input == 2)
+		if (dataNext == 0)
 		{
-			//next byte is right command
-			dataSelect = 2;
-			dataNext = 1;
-		}
-		
-		if (input == 3)
-		{
-			//next byte is go command
-			dataSelect = 3;
-			dataNext = 1;		
-		}
-		
-		if (input == 3)
-		{
-			//next byte is speed command
-			dataSelect = 4;
-			dataNext = 1;				
-		}
-	}
-	
-	if (dataNext == 1)
-	{
-		if (dataSelect == 1)
-		{
-			left = !left;
-			if (left == 1)
+			if (input == 1)
 			{
-				serv_angle = 0;
-			}
-			else
-			{
-				serv_angle = 1031;
-			}
-			serv_update();
-		}
-		
-		if (dataSelect == 2)
-		{
-			right = !right;
-			if (right == 1)
-			{
-				serv_angle = 2062;
-			}
-			else
-			{
-				serv_angle = 1031;
+				//next byte is left command
+				dataSelect = 1;
+				dataNext = 1;
 			}
 			
-			serv_update();
-			
-		}
-		
-		if (dataSelect == 3){
-			go = !go;
-			
-		}
-		
-		if (dataSelect == 4){
-			speed = (float)input;
-			
-			if (go == 1)
+			if (input == 2)
 			{
-				mot_motorSpeedA1 = 0000;
-				mot_motorSpeedA2 = (int)(speed*2000);
-			
-				mot_motorSpeedB1 = 0000;
-				mot_motorSpeedB2 = (int)(speed*2000);
+				//next byte is right command
+				dataSelect = 2;
+				dataNext = 1;
 			}
-			else
+			
+			if (input == 3)
 			{
-				mot_motorSpeedA1 = 0000;
-				mot_motorSpeedA2 = 0000;
+				//next byte is go command
+				dataSelect = 3;
+				dataNext = 1;		
+			}
+			
+			if (input == 3)
+			{
+				//next byte is speed command
+				dataSelect = 4;
+				dataNext = 1;				
+			}
+		}
+		
+		if (dataNext == 1)
+		{
+			if (dataSelect == 1)
+			{
+				left = !left;
+				if (left == 1)
+				{
+					serv_angle = 0;
+				}
+				else
+				{
+					serv_angle = 1031;
+				}
+				serv_update();
+			}
+			
+			if (dataSelect == 2)
+			{
+				right = !right;
+				if (right == 1)
+				{
+					serv_angle = 2062;
+				}
+				else
+				{
+					serv_angle = 1031;
+				}
 				
-				mot_motorSpeedB1 = 0000;
-				mot_motorSpeedB2 = 0000;
+				serv_update();
+				
 			}
 			
-			mot_update();
-		}
-		
-		dataNext = 0;
-		dataSelect = 0;
-	}	
+			if (dataSelect == 3){
+				go = !go;
+				
+			}
+			
+			if (dataSelect == 4){
+				speed = (float)input;
+				
+				if (go == 1)
+				{
+					mot_motorSpeedA1 = 0000;
+					mot_motorSpeedA2 = (int)(speed*2000);
+				
+					mot_motorSpeedB1 = 0000;
+					mot_motorSpeedB2 = (int)(speed*2000);
+				}
+				else
+				{
+					mot_motorSpeedA1 = 0000;
+					mot_motorSpeedA2 = 0000;
+					
+					mot_motorSpeedB1 = 0000;
+					mot_motorSpeedB2 = 0000;
+				}
+				
+				mot_update();
+			}
+			
+			dataNext = 0;
+			dataSelect = 0;
+		}	
 	
 	//printf("leaving comms_receive\n");
+	oldInput = input;
 }
 
 

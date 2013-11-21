@@ -49,8 +49,8 @@ void uart_init (UART_MemMapPtr uartch, int sysclk, int baud)
     /* Make sure that the transmitter and receiver are disabled while we 
      * change settings.
      */
-    UART_C2_REG(uartch) &= ~(UART_C2_TE_MASK
-				| UART_C2_RE_MASK );
+    //UART_C2_REG(uartch) &= ~(UART_C2_TE_MASK | UART_C2_RE_MASK );
+    UART_C2_REG(uartch) &= ~0xC;
 
     /* Configure the UART for 8-bit mode, no parity */
     UART_C1_REG(uartch) = 0;	/* We need all default settings, so entire register is cleared */
@@ -73,8 +73,8 @@ void uart_init (UART_MemMapPtr uartch, int sysclk, int baud)
     UART_C4_REG(uartch) = temp |  UART_C4_BRFA(brfa);    
 
     /* Enable receiver and transmitter */
-	UART_C2_REG(uartch) |= (UART_C2_TE_MASK
-				| UART_C2_RE_MASK );
+	UART_C2_REG(uartch) |= (UART_C2_TE_MASK | UART_C2_RE_MASK );
+    //UART_C2_REG(uartch) |= 0xC;
 }
 /********************************************************************/
 /*
