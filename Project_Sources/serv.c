@@ -4,7 +4,7 @@
  *  Created on: Oct 30, 2013
  *      Author: Ryan
  */
-#define SERV
+#define SERVO
 #include "sys.h"
 
 void serv_init() {	

@@ -86,9 +86,9 @@ void uart_init (UART_MemMapPtr uartch, int sysclk, int baud)
  * Return Values:
  *  the received character
  */
-char uart_getchar (UART_MemMapPtr channel)
+uint8 uart_getchar (UART_MemMapPtr channel)
 {
-	printf("waiting for char...\n");
+	//printf("waiting for char...\n");
     /* Wait until character has been received */
     while (!(UART_S1_REG(channel) & UART_S1_RDRF_MASK));
     
@@ -103,13 +103,15 @@ char uart_getchar (UART_MemMapPtr channel)
  *  channel      UART channel to send to
  *  ch			 character to send
  */ 
-void uart_putchar (UART_MemMapPtr channel, char ch)
+void uart_putchar (UART_MemMapPtr channel, uint8 ch)
 {
 	/* Wait until space is available in the FIFO */
     while(!(UART_S1_REG(channel) & UART_S1_TDRE_MASK));
     
     /* Send the character */
-    UART_D_REG(channel) = (uint8)ch;
+    UART_D_REG(channel) = ch;
+    while(!(UART_S1_REG(channel) & UART_S1_TC_MASK));
+    //printf("transmit complete!");
  }
 /********************************************************************/
 /*

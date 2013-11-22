@@ -33,19 +33,19 @@ void comms_send()
 	//send one round of frame data
 		
 	//uart_putchar(UART5_BASE_PTR, (char)midpoint);
-	uart_putchar(UART5_BASE_PTR, 'a');
+	uart_putchar(UART5_BASE_PTR, (uint8)'a');
 
 	//uart_putchar(UART5_BASE_PTR, (char)adjustment);
-	uart_putchar(UART5_BASE_PTR, 'b');
+	uart_putchar(UART5_BASE_PTR, (uint8)'b');
 			
-	uart_putchar(UART5_BASE_PTR, (char)serv_angle);
-	//uart_putchar(UART5_BASE_PTR, 'c');
+	//uart_putchar(UART5_BASE_PTR, serv_angle);
+	uart_putchar(UART5_BASE_PTR, 'c');
 
-	uart_putchar(UART5_BASE_PTR, (char)mot_motorSpeedA2);
-	//uart_putchar(UART5_BASE_PTR, 'd');
+	//uart_putchar(UART5_BASE_PTR, mot_motorSpeedA2);
+	uart_putchar(UART5_BASE_PTR, 'd');
 
-	uart_putchar(UART5_BASE_PTR, (char)mot_motorSpeedBb);
-	//uart_putchar(UART5_BASE_PTR, 'e');
+	//uart_putchar(UART5_BASE_PTR, mot_motorSpeedB2);
+	uart_putchar(UART5_BASE_PTR, 'e');
 }
 
 void comms_receive()
@@ -59,27 +59,28 @@ void comms_receive()
 	 * 	2 : right
 	 * 	3 : go
 	 * 	4 : speed
-	 * 	
 	 */
 	
-	char dataSelect = 'n';
-	char dataInput = 'n';
+	int dataSelect = 0;
+	int dataInput = 0;
 	
-	static char left = 0;
-	static char right = 0;
-	static char go = 0;
-	static float speed = 0;
+	static int left = 0;
+	static int right = 0;
+	static int go = 0;
+	//static int speed = 0; //should be between 0 and 10
 	
 	
-	dataSelect = (char)uart_getchar(UART5_BASE_PTR);
-	dataInput = (char)uart_getchar(UART5_BASE_PTR);
+	dataSelect = (int)uart_getchar(UART5_BASE_PTR);
+	//comms_send((uint8)dataSelect);
+	//dataInput = (int)uart_getchar(UART5_BASE_PTR);
 	
-	printf("data select: %d\n", dataSelect);
-	printf("data input: %d\n", dataInput);
+	//printf("data select: %i\n", dataSelect);
+	//printf("data input: %i\n", dataInput);
 	
-	if (dataSelect == 1)
+	if (dataSelect == 49)
 	{
-		left = (left == 1)?0:1;
+		left = ((left == 1)?0:1);
+		
 		if (left == 1)
 		{
 			serv_angle = 0;
@@ -89,12 +90,15 @@ void comms_receive()
 			serv_angle = 1031;
 		}
 		serv_update();
+		
+		//comms_send((uint8)'s');
+		//comms_send((uint8)'L');
 	}
 	
-	if (dataSelect == 2)
+	if (dataSelect == 50)
 	{
 		
-		right = (right == 1)?0:1;
+		right = ((right == 1)?0:1);
 		
 		if (right == 1)
 		{
@@ -106,24 +110,54 @@ void comms_receive()
 		}
 		
 		serv_update();
+		//comms_send((uint8)'s');
+		//comms_send((uint8)'R');
 	}
 			
 		
-	if (dataSelect == 3){
-		go = !go;
+	if (dataSelect == 51)
+	{
+		go = ((go == 1)?0:1);
+		
+		/*if (go == 1)
+		{
+			mot_motorSpeedA1 = 0000;
+			mot_motorSpeedA2 = 2000;
+		
+			mot_motorSpeedB1 = 0000;
+			mot_motorSpeedB2 = 2000;
+		}
+		else
+		{
+			mot_motorSpeedA1 = 0000;
+			mot_motorSpeedA2 = 0000;
+			
+			mot_motorSpeedB1 = 0000;
+			mot_motorSpeedB2 = 0000;
+		}
+		
+		mot_update();*/
+		
+		//comms_send((uint8)'s');
+		//comms_send((uint8)'G');
+		
+		
+		
+		dataSelect = 52; //we need to go update motor speeds
 		
 	}
 	
-	if (dataSelect == 4){
-		speed = (float)dataInput;
+	if (dataSelect == 52){
+		speed = dataInput;
+		//printf("speed command: %i\n", speed);
 		
 		if (go == 1)
 		{
 			mot_motorSpeedA1 = 0000;
-			mot_motorSpeedA2 = (int)(speed*2000);
+			mot_motorSpeedA2 = (speed*350);
 		
 			mot_motorSpeedB1 = 0000;
-			mot_motorSpeedB2 = (int)(speed*2000);
+			mot_motorSpeedB2 = (speed*350);
 		}
 		else
 		{

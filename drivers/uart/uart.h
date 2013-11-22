@@ -11,8 +11,8 @@
 /********************************************************************/
 
 void uart_init (UART_MemMapPtr, int, int);
-char uart_getchar (UART_MemMapPtr);
-void uart_putchar (UART_MemMapPtr, char);
+uint8 uart_getchar (UART_MemMapPtr);
+void uart_putchar (UART_MemMapPtr, uint8);
 int uart_getchar_present (UART_MemMapPtr);
 
 /********************************************************************/

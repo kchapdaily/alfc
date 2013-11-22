@@ -87,7 +87,7 @@ void __thumb_startup(void) _EWL_NAKED;
 void __thumb_startup(void)
 {
 		// Setup registers
-		__init_registers();
+	__init_registers();
 
 		// setup hardware
 		__init_hardware();

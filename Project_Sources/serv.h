@@ -18,7 +18,7 @@ void serv_update();
 #define SERV_MAX_VAL		2062
 #define SERV_MID_VAL		1031
 
-#ifdef SERV
+#ifdef SERVO
 volatile int serv_angle;
 int serv_flag;
 #else
